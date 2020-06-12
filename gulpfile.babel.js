@@ -7,6 +7,8 @@ import gimg from 'gulp-image';
 import gsass from 'gulp-sass';
 import gautoprefixer from 'gulp-autoprefixer';
 import minifyCss from 'gulp-csso';
+import gbro from 'gulp-bro';
+import babelify from 'babelify';
 
 gsass.compiler = require('node-sass');
 
@@ -25,6 +27,11 @@ const routes = {
     src: 'src/scss/style.scss',
     dest: 'build/css',
   },
+  js: {
+    src: 'src/js/main.js',
+    dest: 'build/js',
+    watch: 'src/js/*',
+  },
 };
 
 const clean = () => del(['build']);
@@ -38,18 +45,25 @@ const sass = () =>
     .pipe(minifyCss())
     .pipe(gulp.dest(routes.style.dest));
 
+const js = () =>
+  gulp
+    .src(routes.js.src)
+    .pipe(gbro({ transform: [babelify.configure({ presets: ['@babel/preset-env'] }), ['uglifyify', { global: true }]] }))
+    .pipe(gulp.dest(routes.js.dest));
+
 const webserver = () => gulp.src('build').pipe(ws({ livereload: true, open: true }));
 
 const watch = () => {
   gulp.watch(routes.pug.watch, view);
   gulp.watch(routes.img.src, img);
   gulp.watch(routes.style.watch, sass);
+  gulp.watch(routes.js.watch, browserify);
 };
 
 const gh = () => gulp.src('build/**/*').pipe(ghPages());
 
 const prepare = gulp.series([clean, img]);
-const assets = gulp.series([view, sass]);
+const assets = gulp.series([view, sass, js]);
 const postDev = gulp.parallel([webserver, watch]);
 
 export const dev = gulp.series([prepare, assets, postDev]);
