@@ -57,7 +57,7 @@ const watch = () => {
   gulp.watch(routes.pug.watch, view);
   gulp.watch(routes.img.src, img);
   gulp.watch(routes.style.watch, sass);
-  gulp.watch(routes.js.watch, browserify);
+  gulp.watch(routes.js.watch, js);
 };
 
 const gh = () => gulp.src('build/**/*').pipe(ghPages());
