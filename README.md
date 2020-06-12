@@ -1,4 +1,6 @@
-### Gulp
+### Practice Gulp
+
+> https://haymee77.github.io/gulp-gulp
 
 1. pug 파일을 html 로 변환하기
 2. gulp-webserver로 로컬 서버 띄우기
