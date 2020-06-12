@@ -1,89 +1,10 @@
 ### Gulp
 
-#### gulpfile.js
-
-```
-import gulp from 'gulp';
-import pug from 'gulp-pug';
-import del from 'del';
-import ws from 'gulp-webserver';
-import ghPages from 'gulp-gh-pages';
-import gimg from 'gulp-image';
-import gsass from 'gulp-sass';
-import gautoprefixer from 'gulp-autoprefixer';
-import minifyCss from 'gulp-csso';
-import gbro from 'gulp-bro';
-import babelify from 'babelify';
-
-gsass.compiler = require('node-sass');
-
-const routes = {
-	pug: {
-		watch: 'src/**/*.pug',
-		src: 'src/*.pug',
-		dest: 'build',
-	},
-	img: {
-		src: 'src/img/*',
-		dest: 'build/img',
-	},
-	style: {
-		watch: 'src/scss/*',
-		src: 'src/scss/style.scss',
-		dest: 'build/css',
-	},
-	js: {
-		src: 'src/js/main.js',
-		dest: 'build/js',
-		watch: 'src/js/*',
-	},
-};
-
-const clean = () => del(['build']);
-const view = () => gulp.src(routes.pug.src).pipe(pug()).pipe(gulp.dest(routes.pug.dest));
-const img = () => gulp.src(routes.img.src).pipe(gimg()).pipe(gulp.dest(routes.img.dest));
-const sass = () =>
-	gulp
-	.src(routes.style.src)
-	.pipe(gsass().on('error', gsass.logError))
-	.pipe(gautoprefixer({
-		cascade: true,
-		overrideBrowserslist: ['last 2 versions']
-	}))
-	.pipe(minifyCss())
-	.pipe(gulp.dest(routes.style.dest));
-
-const js = () =>
-	gulp
-	.src(routes.js.src)
-	.pipe(gbro({
-		transform: [babelify.configure({
-			presets: ['@babel/preset-env']
-		}), ['uglifyify', {
-			global: true
-		}]]
-	}))
-	.pipe(gulp.dest(routes.js.dest));
-
-const webserver = () => gulp.src('build').pipe(ws({
-	livereload: true,
-	open: true
-}));
-
-const watch = () => {
-	gulp.watch(routes.pug.watch, view);
-	gulp.watch(routes.img.src, img);
-	gulp.watch(routes.style.watch, sass);
-	gulp.watch(routes.js.watch, js);
-};
-
-const gh = () => gulp.src('build/**/*').pipe(ghPages());
-
-const prepare = gulp.series([clean, img]);
-const assets = gulp.series([view, sass, js]);
-const postDev = gulp.parallel([webserver, watch]);
-
-export const dev = gulp.series([prepare, assets, postDev]);
-export const build = gulp.series([prepare, assets]);
-export const deploy = gulp.series([build, gh]);
-```
+1. pug 파일을 html 로 변환하기
+2. gulp-webserver로 로컬 서버 띄우기
+3. gulp-image 로 이미지 압축
+4. gulp-sass, node-sass 로 scss를 css로 변환하기
+5. gulp-autoprefixer 로 구브라우저 지원하는 css 로 전환
+6. gulp-csso 로 css 파일 압축
+7. gulp-bro, babelify, uglifyify 로 최신 자바스크립트를 구브라우저 호환 가능 코드로 변경
+8. gulp-gh-pages 로 github pages에 배포하기
